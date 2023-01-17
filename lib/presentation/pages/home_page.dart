@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (await Permission.storage.request().isGranted) {
       String dir = '${(await getExternalStorageDirectory())!.path}/config.txt';
       File file = File(dir);
-      await file.writeAsString(_perceptron.config);
+      await file.writeAsString(_perceptron.configString);
       await Share.shareXFiles(
         [
           XFile(
@@ -188,13 +188,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final input = <double>[];
 
     for (int i = 0; i < MyHomePage.imageSize; i++) {
-      final str = <String>[];
       for (int j = 0; j < MyHomePage.imageSize; j++) {
         final point = (data[(i * MyHomePage.imageSize + j) * 4 + 3] - 128) / 255;
         input.add(point);
-        str.add(point == 0.0
-            ? '\x1b[34m${point.toStringAsFixed(2)}\x1b[0m'
-            : '\x1b[33m${point.toStringAsFixed(2)}\x1b[0m');
       }
     }
 
