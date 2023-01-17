@@ -46,7 +46,7 @@ class _StatsPageState extends State<StatsPage> {
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height * 0.8,
                   width: MediaQuery.of(context).size.width *
-                      (widget.data.length ~/ 20) /
+                      (widget.data.length / 20).ceil() /
                       _switcherIndex,
                   child: LineChart(
                     painter: LineChartPainter(
@@ -62,7 +62,7 @@ class _StatsPageState extends State<StatsPage> {
                           dataRowsLegends: const [''],
                           chartOptions: const ChartOptions(),
                           xUserLabels: widget.data
-                              .mapIndexed((ind, _) => ind)
+                              .mapIndexed((ind, _) => ind + 1)
                               .slices(_switcherIndex)
                               .where((element) => element.length == _switcherIndex)
                               .map((element) => element.reduce(max))

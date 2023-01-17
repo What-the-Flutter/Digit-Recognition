@@ -47,23 +47,26 @@ class _InputRecognizerState extends State<InputRecognizer> {
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  onPressed: _clearCanvas,
-                  child: const Text('Clear', style: TextStyle(color: Colors.red)),
-                ),
-                TextButton(
-                  onPressed: () => _determine(size),
-                  child: const Text('Determine', style: TextStyle(color: Colors.green)),
-                ),
-                TextButton(
-                  onPressed: () => _teach(size),
-                  child: const Text('Teach', style: TextStyle(color: Colors.orangeAccent)),
-                ),
-              ],
-            )
+            Padding(
+              padding: const EdgeInsets.only(top: 12.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: _clearCanvas,
+                    child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                  ),
+                  TextButton(
+                    onPressed: () => _determine(size),
+                    child: const Text('Determine', style: TextStyle(color: Colors.green)),
+                  ),
+                  TextButton(
+                    onPressed: () => _teach(size),
+                    child: const Text('Teach', style: TextStyle(color: Colors.orangeAccent)),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
         if (_teachingProcess)
