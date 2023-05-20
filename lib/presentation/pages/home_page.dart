@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:digit_recognition/presentation/pages/start_page.dart';
 import 'package:digit_recognition/presentation/pages/stats_page.dart';
 import 'package:digit_recognition/presentation/text_styles.dart';
 import 'package:digit_recognition/presentation/widgets/input_recognizer.dart';
@@ -36,6 +37,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          TextButton(
+            onPressed: _navigateToStart,
+            child: const Text(
+              'Exit',
+              style: TextStyle(color: Colors.white, fontSize: 18.0),
+            ),
+          ),
+        ],
+      ),
       body: Row(
         children: [
           Expanded(
@@ -103,13 +115,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blue)),
                       child: const Text('Export config'),
                     ),
-                    ElevatedButton(
-                      onPressed: _showStats,
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.green),
+                    if (_perceptron.errorsInStatsPeriod.length > StatsPage.maxScale)
+                      ElevatedButton(
+                        onPressed: _showStats,
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.green),
+                        ),
+                        child: const Text('Show stats'),
                       ),
-                      child: const Text('Show stats'),
-                    ),
                   ],
                 ),
               ],
@@ -125,19 +138,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showStats() async {
-    if (_perceptron.errorsInStatsPeriod.length > StatsPage.maxScale) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => StatsPage(
-            statsPeriod: _perceptron.statsPeriod,
-            data: _perceptron.errorsInStatsPeriod
-                .sublist(0, _perceptron.errorsInStatsPeriod.length - 1)
-                .map((errors) => (_perceptron.statsPeriod - errors).toDouble())
-                .toList(),
-          ),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => StatsPage(
+          statsPeriod: _perceptron.statsPeriod,
+          data: _perceptron.errorsInStatsPeriod
+              .sublist(0, _perceptron.errorsInStatsPeriod.length - 1)
+              .map((errors) => (_perceptron.statsPeriod - errors).toDouble())
+              .toList(),
         ),
-      );
-    }
+      ),
+    );
   }
 
   void _updateRandomNumber() {
@@ -147,11 +158,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<List<double>> _processImage(GlobalKey key) async {
     setState(() => _imageData = null);
     final render = key.currentContext!.findAncestorRenderObjectOfType<RenderRepaintBoundary>();
-    final datax = await Files.processImage(render!, MyHomePage.imageSize);
+    final dataImage = await Files.processImage(render!, MyHomePage.imageSize);
 
-    setState(() => _imageData = img_.encodePng(datax));
+    setState(() => _imageData = img_.encodePng(dataImage));
 
-    final data = datax.buffer.asUint8List();
+    final data = dataImage.buffer.asUint8List();
     final input = <double>[];
 
     for (var i = 0; i < MyHomePage.imageSize; i++) {
@@ -163,5 +174,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     await Files.removeImagesAfterProcessing();
     return input;
+  }
+
+  void _navigateToStart() {
+    final newRoute = MaterialPageRoute(builder: (_) => const StartPage());
+    Navigator.of(context).pushAndRemoveUntil(newRoute, (route) => route == newRoute);
   }
 }

@@ -1,16 +1,32 @@
-# digit_recognition
+# Digit Recognition
 
-A new Flutter project.
+Recognition is a mobile application that utilizes machine learning to recognize various characters. The application is designed more to demonstrate the capabilities of machine learning, and not for everyday use, but this does not make it less interesting, but rather the opposite.
 
-## Getting Started
+## User interface
 
-This project is a starting point for a Flutter application.
+### Start screen:
+![img.png](images/start_screen.png)
+### Home screen:
+![img.png](images/home_screen.png)
+### Stats screen:
+![img.png](images/stats_screen.png)
 
-A few resources to get you started if this is your first Flutter project:
+## Use-cases
+### Train network from scratch:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. Add 2+ digits (better if they look different, i and l probably won't work)
+2. Press "Train network!"
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![img.png](images/train_network_step12.png)
+
+3. Check "Draw to teach" sign
+4. Draw suggested digit on canvas
+5. Press "Teach"
+
+![img.png](images/train_network_step345.png)
+
+### Determine digit:
+1. Draw digit on canvas
+2. Press "Determine"
+3. Check result
+![img.png](images/determine_digit_step123.png)

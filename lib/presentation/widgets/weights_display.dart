@@ -17,7 +17,7 @@ class WeightsDisplay extends StatelessWidget {
       padding: MediaQuery.of(context).viewPadding,
       color: Colors.black26,
       child: SingleChildScrollView(
-        physics: const NeverScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         child: Container(
           width: _width,
           height: perceptron.outputsCount * (_width + imageSize * WeightsPainter.scale) / 2 +
