@@ -1,10 +1,9 @@
-import 'dart:io';
 import 'dart:math';
 
-import 'package:digit_recognition/logic/perceptron_config.dart';
 import 'package:digit_recognition/presentation/pages/home_page.dart';
 import 'package:digit_recognition/presentation/text_styles.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:digit_recognition/utils/files.dart';
+import 'package:digit_recognition/utils/perceptron_config.dart';
 import 'package:flutter/material.dart';
 
 class StartPage extends StatefulWidget {
@@ -102,7 +101,7 @@ class _StartPageState extends State<StartPage> {
   void _createConfig() {
     const inputsCount = MyHomePage.imageSize * MyHomePage.imageSize;
     final outputsCount = _alphabet.length;
-    final Random random = Random();
+    final random = Random();
 
     /// For every output neuron we initialize a list of weights coming from every input with
     /// values [-0.5, 0.5];
@@ -121,16 +120,9 @@ class _StartPageState extends State<StartPage> {
   }
 
   void _importConfig() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      final file = File(result.files.single.path!);
-
-      try {
-        final config = PerceptronConfig.fromString(await file.readAsString());
-        _navigateWithConfig(config);
-      } catch (error) {
-        debugPrint('\x1b[31m$error\x1b[0m');
-      }
+    final config = await Files.importConfig();
+    if (config != null) {
+      _navigateWithConfig(config);
     }
   }
 

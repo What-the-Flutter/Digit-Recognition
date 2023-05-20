@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:digit_recognition/logic/perceptron_config.dart';
+import 'package:digit_recognition/utils/perceptron_config.dart';
 
 class Perceptron {
   /// [_convergenceStep] - The convergence step, is selected manually by the developer.
@@ -159,7 +159,7 @@ class Perceptron {
         final localGradientCorrect =
             max(errorCorrect * outputNeuronCorrect * (1 - outputNeuronCorrect), _minLocalGradient);
 
-        for (int i = 0; i < inputsCount; i++) {
+        for (var i = 0; i < inputsCount; i++) {
           weights[correctIndex][i] =
               weights[correctIndex][i] - _convergenceStep * localGradientCorrect * input[i];
         }
@@ -169,7 +169,7 @@ class Perceptron {
         /// Adjust weights leading to other output neurons;
         /// ----------------------------------------------------------------------------------------
         /// Корректировка весов, ведущих к другим выходным нейронам;
-        for (int i = 0; i < outputNeurons.length; i++) {
+        for (var i = 0; i < outputNeurons.length; i++) {
           if ((i == outputIndex && outputIndex != correctIndex) ||
               (i != correctIndex && outputNeurons[i] > _outputFittingCriterion)) {
             final outputNeuron = outputNeurons[i];
@@ -184,7 +184,7 @@ class Perceptron {
             final localGradientOutput =
                 min(errorOutput * outputNeuron * (1 - outputNeuron), -_minLocalGradient);
 
-            for (int j = 0; j < inputsCount; j++) {
+            for (var j = 0; j < inputsCount; j++) {
               weights[i][j] = weights[i][j] - _convergenceStep * localGradientOutput * input[j];
             }
           }
@@ -222,11 +222,11 @@ class Perceptron {
   }
 
   List<double> _getOutputNeuronsValues(List<double> input) {
-    final List<double> outputNeurons = [];
+    final outputNeurons = <double>[];
 
-    for (int i = 0; i < outputsCount; i++) {
-      double sum = 0.0;
-      for (int j = 0; j < inputsCount; j++) {
+    for (var i = 0; i < outputsCount; i++) {
+      var sum = 0.0;
+      for (var j = 0; j < inputsCount; j++) {
         sum += weights[i][j] * input[j];
       }
       outputNeurons.add(_getActivationFuncValue(sum));

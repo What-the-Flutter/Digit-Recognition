@@ -1,20 +1,16 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
-import 'package:digit_recognition/logic/perceptron_config.dart';
+import 'package:digit_recognition/presentation/pages/stats_page.dart';
 import 'package:digit_recognition/presentation/text_styles.dart';
+import 'package:digit_recognition/presentation/widgets/input_recognizer.dart';
 import 'package:digit_recognition/presentation/widgets/weights_display.dart';
+import 'package:digit_recognition/utils/files.dart';
+import 'package:digit_recognition/utils/perceptron.dart';
+import 'package:digit_recognition/utils/perceptron_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as img_;
-import 'package:digit_recognition/logic/perceptron.dart';
-import 'package:digit_recognition/presentation/widgets/input_recognizer.dart';
-import 'package:digit_recognition/presentation/pages/stats_page.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
 
 class MyHomePage extends StatefulWidget {
   static const int imageSize = 24;
@@ -103,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: _exportConfig,
+                      onPressed: () => Files.exportConfig(_perceptron.configString),
                       style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.blue)),
                       child: const Text('Export config'),
                     ),
@@ -144,23 +140,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _exportConfig() async {
-    if (await Permission.storage.request().isGranted) {
-      String dir = '${(await getExternalStorageDirectory())!.path}/config.txt';
-      File file = File(dir);
-      await file.writeAsString(_perceptron.configString);
-      await Share.shareXFiles(
-        [
-          XFile(
-            file.path,
-            bytes: file.readAsBytesSync(),
-            length: await file.length(),
-          ),
-        ],
-      );
-    }
-  }
-
   void _updateRandomNumber() {
     setState(() => _randomNumber = _random.nextInt(_alphabet.length));
   }
@@ -168,35 +147,21 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<List<double>> _processImage(GlobalKey key) async {
     setState(() => _imageData = null);
     final render = key.currentContext!.findAncestorRenderObjectOfType<RenderRepaintBoundary>();
-    final img = await render!.toImage();
+    final datax = await Files.processImage(render!, MyHomePage.imageSize);
 
-    final directory = (await getTemporaryDirectory()).path;
-    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
-    final pngBytes = byteData?.buffer.asUint8List();
-    final imgFile = File('$directory/temp.png');
-    await imgFile.writeAsBytes(pngBytes!);
+    setState(() => _imageData = img_.encodePng(datax));
 
-    final image = img_.decodeImage(imgFile.readAsBytesSync());
-    final resizedImage =
-        img_.copyResize(image!, width: MyHomePage.imageSize, height: MyHomePage.imageSize);
-
-    final newFile = File('$directory/temp-compressed.png');
-    newFile.writeAsBytesSync(img_.encodePng(resizedImage));
-    setState(() => _imageData = newFile.readAsBytesSync());
-
-    final data = resizedImage.buffer.asUint8List();
+    final data = datax.buffer.asUint8List();
     final input = <double>[];
 
-    for (int i = 0; i < MyHomePage.imageSize; i++) {
-      for (int j = 0; j < MyHomePage.imageSize; j++) {
+    for (var i = 0; i < MyHomePage.imageSize; i++) {
+      for (var j = 0; j < MyHomePage.imageSize; j++) {
         final point = (data[(i * MyHomePage.imageSize + j) * 4 + 3] - 128) / 255;
         input.add(point);
       }
     }
 
-    await imgFile.delete();
-    await newFile.delete();
-
+    await Files.removeImagesAfterProcessing();
     return input;
   }
 }

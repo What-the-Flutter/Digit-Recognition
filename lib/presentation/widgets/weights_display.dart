@@ -1,5 +1,5 @@
+import 'package:digit_recognition/utils/perceptron.dart';
 import 'package:flutter/material.dart';
-import 'package:digit_recognition/logic/perceptron.dart';
 
 class WeightsDisplay extends StatelessWidget {
   static const EdgeInsets _padding = EdgeInsets.symmetric(vertical: 30.0);
@@ -57,10 +57,10 @@ class WeightsPainter extends CustomPainter {
 
     final horizontalOffset = (size.width - imageSize * scale) / 2;
 
-    for (int k = 0; k < perceptron.outputsCount; k++) {
+    for (var k = 0; k < perceptron.outputsCount; k++) {
       final verticalOffset = (imageSize * scale + horizontalOffset) * k;
-      for (int i = 0; i < imageSize; i++) {
-        for (int j = 0; j < imageSize; j++) {
+      for (var i = 0; i < imageSize; i++) {
+        for (var j = 0; j < imageSize; j++) {
           final opacity = ((perceptron.weights[k][i * 24 + j]) * 255).toInt();
           canvas.drawRect(
             Rect.fromLTWH(
